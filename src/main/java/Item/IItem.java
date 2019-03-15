@@ -1,8 +1,8 @@
 package Item;
 
 public interface IItem {
-  int getItemIndex();
-  int getItemProfit();
-  int getItemWeight();
-  int getItemCityIndex();
+  int getIndex();
+  int getProfit();
+  int getWeight();
+  int getCityIndex();
 }

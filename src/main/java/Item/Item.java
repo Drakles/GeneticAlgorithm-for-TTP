@@ -1,5 +1,7 @@
 package Item;
 
+import java.util.Objects;
+
 public class Item implements IItem {
 
   private final int index;
@@ -14,20 +16,40 @@ public class Item implements IItem {
     this.cityIndex = cityIndex;
   }
 
-  public int getItemIndex() {
+  public int getIndex() {
     return index;
   }
 
-  public int getItemProfit() {
+  public int getProfit() {
     return profit;
   }
 
-  public int getItemWeight() {
+  public int getWeight() {
     return weight;
   }
 
-  public int getItemCityIndex() {
+  public int getCityIndex() {
     return cityIndex;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Item item = (Item) o;
+    return index == item.index &&
+        profit == item.profit &&
+        weight == item.weight &&
+        cityIndex == item.cityIndex;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(index, profit, weight, cityIndex);
   }
 
   @Override

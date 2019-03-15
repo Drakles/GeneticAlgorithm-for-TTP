@@ -2,10 +2,10 @@ package City;
 
 public class City implements ICity{
   private final int index;
-  private final int x;
-  private final int y;
+  private final double x;
+  private final double y;
 
-  public City(int index, int x, int y) {
+  public City(int index, double x, double y) {
     this.index = index;
     this.x = x;
     this.y = y;
@@ -22,5 +22,14 @@ public class City implements ICity{
 
   public double getY() {
     return y;
+  }
+
+  @Override
+  public String toString() {
+    return "City{" +
+        "index=" + index +
+        ", x=" + x +
+        ", y=" + y +
+        '}';
   }
 }
