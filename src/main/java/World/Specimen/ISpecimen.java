@@ -1,8 +1,6 @@
-package Specimen;
+package World.Specimen;
 
-import City.ICity;
-import Item.IItem;
-import java.util.Collection;
+import World.Item.IItem;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +12,7 @@ public interface ISpecimen {
 
   ISpecimen reproduce(ISpecimen otherSpecimen,int reproduceParam);
 
-  int getRateEvaluation();
+  double getRateEvaluation();
 
   List<Integer> getCities();
 

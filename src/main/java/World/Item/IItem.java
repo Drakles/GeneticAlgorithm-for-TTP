@@ -1,4 +1,4 @@
-package Item;
+package World.Item;
 
 public interface IItem {
   int getIndex();

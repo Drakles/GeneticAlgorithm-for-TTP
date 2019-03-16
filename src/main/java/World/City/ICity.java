@@ -1,4 +1,4 @@
-package City;
+package World.City;
 
 public interface ICity {
 

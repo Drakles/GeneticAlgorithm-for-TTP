@@ -1,4 +1,4 @@
-package Item;
+package World.Item;
 
 import java.util.Objects;
 
@@ -54,7 +54,7 @@ public class Item implements IItem {
 
   @Override
   public String toString() {
-    return "Item{" +
+    return "World.Item{" +
         "index=" + index +
         ", profit=" + profit +
         ", weight=" + weight +

@@ -1,6 +1,9 @@
-import City.ICity;
-import Item.IItem;
-import Specimen.ISpecimen;
+package World;
+
+import World.City.ICity;
+import World.Item.IItem;
+import World.Specimen.ISpecimen;
+import World.Specimen.Specimen;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -8,9 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 public class World {
+
   private int dimension;
   private int numberOfItems;
-  private int capacityOfBackpack;;
+  private int capacityOfBackpack;
+  ;
   private double minSpeed;
   private double maxSpeed;
   private double rentingRatio;
@@ -21,7 +26,7 @@ public class World {
 
   private List<ISpecimen> population = new LinkedList<>();
 
-  public void initialize(Loader loader){
+  public void initializeWorld(Loader loader) {
     this.dimension = loader.getDimension();
     this.numberOfItems = loader.getNumberOfItems();
     this.capacityOfBackpack = loader.getCapacityOfBackpack();
@@ -30,15 +35,23 @@ public class World {
     this.rentingRatio = loader.getRentingRatio();
     this.edgeWeightType = loader.getEdgeWeightType();
 
-    for (ICity city : loader.getCities()){
+    for (ICity city : loader.getCities()) {
       cities.add(city);
-      citiesItems.putIfAbsent(city.getIndex(),new LinkedList<>());
+      citiesItems.putIfAbsent(city.getIndex(), new LinkedList<>());
     }
 
-    for (IItem item : loader.getItems()){
-      if(citiesItems.containsKey(item.getCityIndex())){
+    for (IItem item : loader.getItems()) {
+      if (citiesItems.containsKey(item.getCityIndex())) {
         citiesItems.get(item.getCityIndex()).add(item);
       }
+    }
+  }
+
+  public void initializePopulation(int numberOfPopulation) {
+    for (int i = 0; i < numberOfPopulation; i++) {
+      ISpecimen specimen = new Specimen(this);
+      specimen.initialise(citiesItems);
+      population.add(specimen);
     }
   }
 
@@ -74,57 +87,30 @@ public class World {
     return cities;
   }
 
-  public Map<Integer, List<IItem>> getCitiesItems() {
-    return citiesItems;
-  }
-
   public List<ISpecimen> getPopulation() {
     return population;
-  }
-
-  public void setDimension(int dimension) {
-    this.dimension = dimension;
-  }
-
-  public void setNumberOfItems(int numberOfItems) {
-    this.numberOfItems = numberOfItems;
-  }
-
-  public void setCapacityOfBackpack(int capacityOfBackpack) {
-    this.capacityOfBackpack = capacityOfBackpack;
-  }
-
-  public void setMinSpeed(double minSpeed) {
-    this.minSpeed = minSpeed;
-  }
-
-  public void setMaxSpeed(double maxSpeed) {
-    this.maxSpeed = maxSpeed;
-  }
-
-  public void setRentingRatio(double rentingRatio) {
-    this.rentingRatio = rentingRatio;
-  }
-
-  public void setEdgeWeightType(String edgeWeightType) {
-    this.edgeWeightType = edgeWeightType;
-  }
-
-  public void setCities(List<ICity> cities) {
-    this.cities = cities;
-  }
-
-  public void setCitiesItems(Map<Integer, List<IItem>> citiesItems) {
-    this.citiesItems = citiesItems;
   }
 
   public void setPopulation(List<ISpecimen> population) {
     this.population = population;
   }
 
+  public ICity getCity(Integer cityIndex) {
+    for (ICity city : cities) {
+      if (city.getIndex() == cityIndex) {
+        return city;
+      }
+    }
+    return null;
+  }
+
+  public List<IItem> getItems(Integer cityIndex) {
+    return citiesItems.get(cityIndex);
+  }
+
   @Override
   public String toString() {
-    return "World{" +
+    return "World.World{" +
         "dimension=" + dimension +
         ", numberOfItems=" + numberOfItems +
         ", capacityOfBackpack=" + capacityOfBackpack +

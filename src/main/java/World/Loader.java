@@ -1,17 +1,18 @@
-import City.City;
-import City.ICity;
-import Item.IItem;
-import Item.Item;
+package World;
+
+import World.City.City;
+import World.City.ICity;
+import World.Item.IItem;
+import World.Item.Item;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Loader {
 
-//  private static final Logger logger = LoggerFactory.getLogger(Loader.class);
+//  private static final Logger logger = LoggerFactory.getLogger(World.Loader.class);
 
   private int dimension;
   private int numberOfItems;
@@ -137,7 +138,7 @@ public class Loader {
 
   @Override
   public String toString() {
-    return "Loader{" +
+    return "World.Loader{" +
         "dimension=" + dimension +
         ", numberOfItems=" + numberOfItems +
         ", capacityOfBackpack=" + capacityOfBackpack +

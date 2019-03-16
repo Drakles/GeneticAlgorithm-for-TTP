@@ -1,4 +1,4 @@
-package City;
+package World.City;
 
 public class City implements ICity{
   private final int index;
@@ -26,7 +26,7 @@ public class City implements ICity{
 
   @Override
   public String toString() {
-    return "City{" +
+    return "World.City{" +
         "index=" + index +
         ", x=" + x +
         ", y=" + y +
