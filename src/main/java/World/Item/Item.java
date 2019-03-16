@@ -55,8 +55,7 @@ public class Item implements IItem {
   @Override
   public String toString() {
     return "Item{" +
-        "index=" + index +
-        ", profit=" + profit +
+        "profit=" + profit +
         ", weight=" + weight +
         ", cityIndex=" + cityIndex +
         '}';
