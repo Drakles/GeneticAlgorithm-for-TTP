@@ -2,20 +2,22 @@ package World;
 
 import World.City.ICity;
 import World.Item.IItem;
+import World.SelectionMethods.ISelectionMethod;
 import World.Specimen.ISpecimen;
 import World.Specimen.Specimen;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 
 public class World {
 
   private int dimension;
   private int numberOfItems;
   private int capacityOfBackpack;
-  ;
   private double minSpeed;
   private double maxSpeed;
   private double rentingRatio;
@@ -53,6 +55,10 @@ public class World {
       specimen.initialise(citiesItems);
       population.add(specimen);
     }
+  }
+
+  public void selection(ISelectionMethod selectionMethod) {
+    population = selectionMethod.nextGeneration(population);
   }
 
   public int getDimension() {
@@ -110,7 +116,7 @@ public class World {
 
   @Override
   public String toString() {
-    return "World.World{" +
+    return "World{" +
         "dimension=" + dimension +
         ", numberOfItems=" + numberOfItems +
         ", capacityOfBackpack=" + capacityOfBackpack +
@@ -122,5 +128,32 @@ public class World {
         ", citiesItems=" + citiesItems +
         ", population=" + population +
         '}';
+  }
+
+  public void evaluate() {
+    population.forEach(ISpecimen::evaluate);
+  }
+
+  public void reproduction(int reproductionChance) {
+    List<ISpecimen[]> parents = createPairsForCrossover();
+    population.clear();
+    for (ISpecimen[] pair : parents) {
+      population.add(pair[0].reproduce(pair[1], reproductionChance));
+      population.add(pair[1].reproduce(pair[0], reproductionChance));
+    }
+  }
+
+  private List<ISpecimen[]> createPairsForCrossover() {
+    List<ISpecimen> source = new ArrayList<>(population);
+    Collections.shuffle(source);
+    List<ISpecimen[]> result = new ArrayList<>();
+    for (int i = 0; i < source.size() / 2; i++) {
+      result.add(new ISpecimen[]{source.get(2 * i), source.get(2 * i + 1)});
+    }
+    return result;
+  }
+
+  public void mutation(int mutationChance) {
+    population.forEach(s -> s.mutate(mutationChance));
   }
 }

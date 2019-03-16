@@ -32,12 +32,8 @@ public class Loader {
       try {
         Scanner sc = new Scanner(sourceFile);
 
-        //problem name
-//        logger.info(sc.nextLine());
-        //KNAPSACK DATA TYPE
-//        logger.info(sc.nextLine());
         System.out.println(sc.nextLine());
-        System.out.println(sc.nextLine());
+        sc.nextLine();
 
         String dimension = sc.nextLine();
         this.dimension = Integer.valueOf(dimension.substring(11));
@@ -60,7 +56,7 @@ public class Loader {
         String edgheWeightType = sc.nextLine();
         this.edgeWeightType = edgheWeightType.substring(18);
 
-        System.out.println(sc.nextLine());
+        sc.nextLine();
 
         int cityIndex;
         double cityXCoord;

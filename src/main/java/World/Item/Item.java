@@ -54,7 +54,7 @@ public class Item implements IItem {
 
   @Override
   public String toString() {
-    return "World.Item{" +
+    return "Item{" +
         "index=" + index +
         ", profit=" + profit +
         ", weight=" + weight +

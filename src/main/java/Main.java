@@ -1,6 +1,8 @@
+import World.Loader;
+import World.SelectionMethods.ISelectionMethod;
+import World.SelectionMethods.Tournament;
 import World.Specimen.ISpecimen;
 import World.World;
-import World.Loader;
 import java.util.Comparator;
 
 public class Main {
@@ -13,27 +15,24 @@ public class Main {
     World world = new World();
     world.initializeWorld(loader);
 
-//    System.out.println(world);
-//    System.out.println(loader);
-
-//    ISpecimen specimenP1 = new World.Specimen();
-//    specimenP1.initialise(world.getCitiesItems());
-//
-//    ISpecimen specimenP2 = new World.Specimen();
-//    specimenP2.initialise(world.getCitiesItems());
-//    System.out.println(specimen);
-
-//    specimen.mutate(100);
-
-//    ISpecimen child = specimenP1.reproduce(specimenP2,100);
-//    System.out.println(child);
+    ISelectionMethod selectionMethod = new Tournament(5, 100);
+    int numberOfGeneration = 100;
+    int reproductionChance = 70;
+    int mutationChance = 10;
 
     world.initializePopulation(100);
+    world.evaluate();
+
+    for (int i = 0; i < numberOfGeneration; i++) {
+      world.selection(selectionMethod);
+      world.reproduction(reproductionChance);
+      world.mutation(mutationChance);
+      world.evaluate();
+    }
 
     ISpecimen best = world.getPopulation().stream().max(Comparator.comparingDouble(
         ISpecimen::getRateEvaluation)).get();
     System.out.println(best);
     System.out.println(best.getRateEvaluation());
-
   }
 }

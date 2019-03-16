@@ -20,6 +20,13 @@ public class Specimen implements ISpecimen {
   private final List<Integer> cities;
   private final static Random random = new Random();
   private final World world;
+  private Double rateEvaluation;
+
+  public Specimen(World world) {
+    items = new LinkedList<>();
+    cities = new LinkedList<>();
+    this.world = world;
+  }
 
   public Specimen(List<Integer> cities, List<IItem> items, World world) {
     this.cities = cities;
@@ -27,10 +34,11 @@ public class Specimen implements ISpecimen {
     this.world = world;
   }
 
-  public Specimen(World world) {
-    items = new LinkedList<>();
-    cities = new LinkedList<>();
+  public Specimen(List<Integer> cities, List<IItem> items, World world, Double rateEvaluation) {
+    this.cities = cities;
+    this.items = items;
     this.world = world;
+    this.rateEvaluation = rateEvaluation;
   }
 
   public void initialise(Map<Integer, List<IItem>> citiesItems) {
@@ -55,18 +63,19 @@ public class Specimen implements ISpecimen {
   }
 
   private IItem choseItem(List<IItem> items, AtomicInteger actualCapacity, int cityIndex) {
-    IItem bestItem = items.get(0);
-    for (IItem item : items) {
-      if (item.getProfit() / item.getWeight() > bestItem.getProfit() / bestItem.getWeight()) {
-        bestItem = item;
+    if (!items.isEmpty()) {
+      IItem bestItem = items.get(0);
+      for (IItem item : items) {
+        if (item.getProfit() / item.getWeight() > bestItem.getProfit() / bestItem.getWeight()) {
+          bestItem = item;
+        }
+      }
+      if (bestItem.getWeight() <= actualCapacity.get()) {
+        actualCapacity.addAndGet(-bestItem.getWeight());
+        return bestItem;
       }
     }
-    if (bestItem.getWeight() <= actualCapacity.get()) {
-      actualCapacity.addAndGet(-bestItem.getWeight());
-      return bestItem;
-    } else {
-      return new Item(-1, 0, 0, cityIndex);
-    }
+    return new Item(-1, 0, 0, cityIndex);
   }
 
   @Override
@@ -93,7 +102,7 @@ public class Specimen implements ISpecimen {
   @Override
   public ISpecimen reproduce(ISpecimen otherSpecimen, int reproduceParam) {
     int chance = random.nextInt(100);
-    Specimen specimen = null;
+    ISpecimen specimen = this;
     if (chance < reproduceParam) {
 
       int splitIndex = random.nextInt(cities.size());
@@ -114,8 +123,13 @@ public class Specimen implements ISpecimen {
   }
 
   @Override
+  public void evaluate() {
+    rateEvaluation = getItemsProfitSum() - getCityTravelTotalTime();
+  }
+
+  @Override
   public double getRateEvaluation() {
-    return getItemsProfitSum() - getCityTravelTotalTime();
+    return rateEvaluation;
   }
 
   private int getItemsProfitSum() {
@@ -174,10 +188,21 @@ public class Specimen implements ISpecimen {
   }
 
   @Override
+  public ISpecimen copy() {
+    return new Specimen(new ArrayList<>(cities), new ArrayList<>(items), world, rateEvaluation);
+  }
+
+  @Override
+  public World getWorld() {
+    return world;
+  }
+
+  @Override
   public String toString() {
-    return "World.Specimen{" +
+    return "Specimen{" +
         "items=" + items +
         ", cities=" + cities +
+        ", rateEvaluation=" + rateEvaluation +
         '}';
   }
 }

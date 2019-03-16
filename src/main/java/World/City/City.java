@@ -26,7 +26,7 @@ public class City implements ICity{
 
   @Override
   public String toString() {
-    return "World.City{" +
+    return "City{" +
         "index=" + index +
         ", x=" + x +
         ", y=" + y +
