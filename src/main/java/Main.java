@@ -10,6 +10,10 @@ public class Main {
         selectionMethod, 100, 70, 10, 100);
 
     worldManager.run();
-    System.out.println(worldManager.getBestSpecimen());
+//    System.out.println(worldManager.getBestSpecimen());
+
+    FileService.createCsvFile(worldManager.getDescription(),worldManager.getHeader(),
+        worldManager.getData());
+
   }
 }

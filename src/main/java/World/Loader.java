@@ -12,8 +12,6 @@ import java.util.Scanner;
 
 public class Loader {
 
-//  private static final Logger logger = LoggerFactory.getLogger(World.Loader.class);
-
   private int dimension;
   private int numberOfItems;
   private int capacityOfBackpack;

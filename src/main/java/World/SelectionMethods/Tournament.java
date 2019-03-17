@@ -38,4 +38,9 @@ public class Tournament implements ISelectionMethod {
     }
     return nextGeneration;
   }
+
+  @Override
+  public String toString() {
+    return "Tournament";
+  }
 }

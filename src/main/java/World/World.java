@@ -7,6 +7,7 @@ import World.Specimen.ISpecimen;
 import World.Specimen.Specimen;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class World {
   private Map<Integer, List<IItem>> citiesItems = new LinkedHashMap<>();
 
   private List<ISpecimen> population = new LinkedList<>();
+  private int currentGeneration;
 
   public void initializeWorld(Loader loader) {
     this.dimension = loader.getDimension();
@@ -55,10 +57,44 @@ public class World {
       specimen.initialise(citiesItems);
       population.add(specimen);
     }
+    currentGeneration = 0;
   }
 
   public void selection(ISelectionMethod selectionMethod) {
     population = selectionMethod.nextGeneration(population);
+    currentGeneration++;
+  }
+
+  public void evaluate() {
+    population.forEach(ISpecimen::evaluate);
+  }
+
+  public void reproduction(int reproductionChance) {
+    List<ISpecimen[]> parents = createPairsForCrossover();
+    population.clear();
+    for (ISpecimen[] pair : parents) {
+      population.add(pair[0].reproduce(pair[1], reproductionChance));
+      population.add(pair[1].reproduce(pair[0], reproductionChance));
+    }
+  }
+
+  private List<ISpecimen[]> createPairsForCrossover() {
+    List<ISpecimen> source = new ArrayList<>(population);
+    Collections.shuffle(source);
+    List<ISpecimen[]> result = new ArrayList<>();
+    for (int i = 0; i < source.size() / 2; i++) {
+      result.add(new ISpecimen[]{source.get(2 * i), source.get(2 * i + 1)});
+    }
+    return result;
+  }
+
+  public void mutation(int mutationChance) {
+    population.forEach(s -> s.mutate(mutationChance));
+  }
+
+
+  public int getCurrentGeneration() {
+    return currentGeneration;
   }
 
   public int getDimension() {
@@ -114,6 +150,18 @@ public class World {
     return citiesItems.get(cityIndex);
   }
 
+  public ISpecimen getBestSpecimen() {
+    return population.stream().max(Comparator.comparingDouble(ISpecimen::getRateEvaluation)).get();
+  }
+
+  public ISpecimen getWorstSpecimen() {
+    return population.stream().min(Comparator.comparingDouble(ISpecimen::getRateEvaluation)).get();
+  }
+
+  public Double getAverageResult() {
+    return population.stream().mapToDouble(ISpecimen::getRateEvaluation).sum() / population.size();
+  }
+
   @Override
   public String toString() {
     return "World{" +
@@ -128,32 +176,5 @@ public class World {
         ", citiesItems=" + citiesItems +
         ", population=" + population +
         '}';
-  }
-
-  public void evaluate() {
-    population.forEach(ISpecimen::evaluate);
-  }
-
-  public void reproduction(int reproductionChance) {
-    List<ISpecimen[]> parents = createPairsForCrossover();
-    population.clear();
-    for (ISpecimen[] pair : parents) {
-      population.add(pair[0].reproduce(pair[1], reproductionChance));
-      population.add(pair[1].reproduce(pair[0], reproductionChance));
-    }
-  }
-
-  private List<ISpecimen[]> createPairsForCrossover() {
-    List<ISpecimen> source = new ArrayList<>(population);
-    Collections.shuffle(source);
-    List<ISpecimen[]> result = new ArrayList<>();
-    for (int i = 0; i < source.size() / 2; i++) {
-      result.add(new ISpecimen[]{source.get(2 * i), source.get(2 * i + 1)});
-    }
-    return result;
-  }
-
-  public void mutation(int mutationChance) {
-    population.forEach(s -> s.mutate(mutationChance));
   }
 }
