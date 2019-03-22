@@ -1,19 +1,20 @@
 import World.SelectionMethods.ISelectionMethod;
-import World.SelectionMethods.Tournament;
+import World.SelectionMethods.Roulette;
 
 public class Main {
 
   public static void main(String[] args) {
-    ISelectionMethod selectionMethod = new Tournament(5, 100);
+    long t = System.currentTimeMillis();
+//    ISelectionMethod selectionMethod = new Tournament(5, 100);
+    ISelectionMethod selectionMethod = new Roulette();
 
-    WorldManager worldManager = new WorldManager("src/main/resources/trivial_0.ttp",
-        selectionMethod, 100, 70, 10, 100);
+    WorldManager random = new WorldManager("src/main/resources/medium_0.ttp", selectionMethod,
+        2, 70, 10, 10);
+    random.runGeneticAlgorithm(1);
 
-    worldManager.run();
-//    System.out.println(worldManager.getBestSpecimen());
+    FileService.createCsvFile(random.getDescription(), random.getHeader(),
+        random.getDataWithTime());
 
-    FileService.createCsvFile(worldManager.getDescription(),worldManager.getHeader(),
-        worldManager.getData());
-
+    System.out.println("Total execution time: " + (System.currentTimeMillis() - t));
   }
 }

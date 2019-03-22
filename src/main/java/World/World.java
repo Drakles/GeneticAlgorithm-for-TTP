@@ -3,8 +3,9 @@ package World;
 import World.City.ICity;
 import World.Item.IItem;
 import World.SelectionMethods.ISelectionMethod;
+import World.Specimen.GreedySpecimen;
 import World.Specimen.ISpecimen;
-import World.Specimen.Specimen;
+import World.Specimen.GeneticSpecimen;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -53,10 +54,17 @@ public class World {
 
   public void initializePopulation(int numberOfPopulation) {
     for (int i = 0; i < numberOfPopulation; i++) {
-      ISpecimen specimen = new Specimen(this);
+      ISpecimen specimen = new GeneticSpecimen(this);
       specimen.initialise(citiesItems);
       population.add(specimen);
     }
+    currentGeneration = 0;
+  }
+
+  public void initializeGreedy() {
+    ISpecimen specimenGreedy = new GreedySpecimen(this);
+    specimenGreedy.initialise(citiesItems);
+    population.add(specimenGreedy);
     currentGeneration = 0;
   }
 
@@ -158,8 +166,8 @@ public class World {
     return population.stream().min(Comparator.comparingDouble(ISpecimen::getRateEvaluation)).get();
   }
 
-  public Double getAverageResult() {
-    return population.stream().mapToDouble(ISpecimen::getRateEvaluation).sum() / population.size();
+  public Integer getAverageResult() {
+    return population.stream().mapToInt(ISpecimen::getRateEvaluation).sum() / population.size();
   }
 
   @Override
@@ -176,5 +184,9 @@ public class World {
         ", citiesItems=" + citiesItems +
         ", population=" + population +
         '}';
+  }
+
+  public void killAll() {
+    population.clear();
   }
 }

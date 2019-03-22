@@ -1,10 +1,8 @@
 package World.Specimen;
 
-import World.City.ICity;
 import World.Item.IItem;
 import World.Item.Item;
 import World.World;
-import com.google.common.util.concurrent.AtomicDouble;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,27 +12,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 
-public class Specimen implements ISpecimen {
+public class GeneticSpecimen implements ISpecimen {
 
   private final List<IItem> items;
   private final List<Integer> cities;
   private final static Random random = new Random();
   private final World world;
-  private Double rateEvaluation;
+  private Integer rateEvaluation;
 
-  public Specimen(World world) {
+  public GeneticSpecimen(World world) {
     items = new LinkedList<>();
     cities = new LinkedList<>();
     this.world = world;
   }
 
-  public Specimen(List<Integer> cities, List<IItem> items, World world) {
+  public GeneticSpecimen(List<Integer> cities, List<IItem> items, World world) {
     this.cities = cities;
     this.items = items;
     this.world = world;
   }
 
-  public Specimen(List<Integer> cities, List<IItem> items, World world, Double rateEvaluation) {
+  public GeneticSpecimen(List<Integer> cities, List<IItem> items, World world,
+      Integer rateEvaluation) {
     this.cities = cities;
     this.items = items;
     this.world = world;
@@ -52,7 +51,7 @@ public class Specimen implements ISpecimen {
 
       List<IItem> chosenItems = citiesItems.get(cityIndexChose);
       if (!chosenItems.isEmpty()) {
-        items.add(choseItem(chosenItems, actualCapacityOfBackpack, cityIndexChose));
+        items.add(greedlyChoiceItem(chosenItems, actualCapacityOfBackpack, cityIndexChose));
         cities.add(cityIndexChose);
       } else {
         cities.add(0, cityIndexChose);
@@ -60,22 +59,6 @@ public class Specimen implements ISpecimen {
       }
       keys.remove(randomInt);
     }
-  }
-
-  private IItem choseItem(List<IItem> items, AtomicInteger actualCapacity, int cityIndex) {
-    if (!items.isEmpty()) {
-      IItem bestItem = items.get(0);
-      for (IItem item : items) {
-        if (item.getProfit() / item.getWeight() > bestItem.getProfit() / bestItem.getWeight()) {
-          bestItem = item;
-        }
-      }
-      if (bestItem.getWeight() <= actualCapacity.get()) {
-        actualCapacity.addAndGet(-bestItem.getWeight());
-        return bestItem;
-      }
-    }
-    return new Item(-1, 0, 0, cityIndex);
   }
 
   @Override
@@ -115,66 +98,21 @@ public class Specimen implements ISpecimen {
       AtomicInteger actualBackpackCapacity = new AtomicInteger(world.getCapacityOfBackpack());
 
       for (Integer city : childCities) {
-        childItems.add(choseItem(world.getItems(city), actualBackpackCapacity, city));
+        childItems.add(greedlyChoiceItem(world.getItems(city), actualBackpackCapacity, city));
       }
-      specimen = new Specimen(childCities, childItems, world);
+      specimen = new GeneticSpecimen(childCities, childItems, world);
     }
     return specimen;
   }
 
   @Override
   public void evaluate() {
-    rateEvaluation = getItemsProfitSum() - getCityTravelTotalTime();
+    rateEvaluation = getItemsProfitSum(items) - getCityTravelTotalTime(world, cities, items);
   }
 
   @Override
-  public double getRateEvaluation() {
+  public int getRateEvaluation() {
     return rateEvaluation;
-  }
-
-  private int getItemsProfitSum() {
-    return items.stream().mapToInt(IItem::getProfit).sum();
-  }
-
-  private double getCityTravelTotalTime() {
-    double totalTime = 0;
-    AtomicDouble actualSpeed = new AtomicDouble(world.getMaxSpeed());
-    AtomicInteger actualCapacity = new AtomicInteger(world.getCapacityOfBackpack());
-    List<IItem> backpack = new LinkedList<>();
-
-    for (int i = 0; i < cities.size() - 1; i++) {
-      IItem item = items.get(i);
-      backpack.add(item);
-      actualCapacity.addAndGet(-item.getWeight());
-
-      totalTime += travel(cities.get(i), backpack, cities.get(i + 1), actualSpeed);
-    }
-    IItem lastItem = items.get(items.size() - 1);
-    backpack.add(lastItem);
-    actualCapacity.addAndGet(-lastItem.getWeight());
-
-    totalTime += travel(cities.get(cities.size() - 1), backpack, cities.get(0), actualSpeed);
-
-    return totalTime;
-  }
-
-  private double travel(Integer firstCityIndex, List<IItem> backpack,
-      Integer secondCityIndex, AtomicDouble actualSpeed) {
-    actualSpeed.set(currentSpeed(backpack.stream().mapToDouble(IItem::getWeight).sum()));
-    return routeLength(firstCityIndex, secondCityIndex) / actualSpeed.get();
-  }
-
-  private double currentSpeed(double actualWeightSum) {
-    return world.getMaxSpeed() - actualWeightSum * ((world.getMaxSpeed() - world.getMinSpeed())
-        / world.getCapacityOfBackpack());
-  }
-
-  private double routeLength(Integer firstCityIndex, Integer secondCityIndex) {
-    ICity firstCity = world.getCity(firstCityIndex);
-    ICity secondCity = world.getCity(secondCityIndex);
-
-    return Math.sqrt(Math.pow(Math.abs(firstCity.getX() - secondCity.getX()), 2) + Math
-        .pow(Math.abs(firstCity.getY() - secondCity.getY()), 2));
   }
 
   @Override
@@ -189,7 +127,8 @@ public class Specimen implements ISpecimen {
 
   @Override
   public ISpecimen copy() {
-    return new Specimen(new ArrayList<>(cities), new ArrayList<>(items), world, rateEvaluation);
+    return new GeneticSpecimen(new ArrayList<>(cities), new ArrayList<>(items), world,
+        rateEvaluation);
   }
 
   @Override
@@ -200,9 +139,7 @@ public class Specimen implements ISpecimen {
   @Override
   public String toString() {
     return "Specimen{" +
-        "items=" + items +
-        ", cities=" + cities +
-        ", rateEvaluation=" + rateEvaluation +
+        "rateEvaluation=" + rateEvaluation +
         '}';
   }
 }
